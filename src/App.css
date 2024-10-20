@@ -36,3 +36,78 @@
     transform: rotate(360deg);
   }
 }
+
+/* Start Node: Ellipse with source handle only at the bottom */
+.start-node {
+  width: 120px;
+  height: 60px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid black;
+  position: relative;
+}
+
+/* Stop Node: Ellipse with target handle only at the top */
+.stop-node {
+  width: 120px;
+  height: 60px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid black;
+  position: relative;
+}
+
+
+/* Process Node: Rectangle */
+.process-node {
+  width: 120px;
+  height: 60px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid black;
+  position: relative;
+}
+
+/* Input/Output Node: Parallelogram */
+.input-output-node {
+  width: 120px;
+  height: 60px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid black;
+  transform: skew(20deg);
+  position: relative;
+}
+
+.input-output-node div {
+  transform: skew(-20deg); /* Fix label skew */
+  text-align: center;
+}
+
+/* Decision Node: Diamond */
+.decision-node {
+  width: 100px;
+  height: 100px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid black;
+  transform: rotate(45deg);
+  position: relative;
+}
+
+.decision-node div {
+  transform: rotate(-45deg); /* Rotate the label back */
+  text-align: center;
+}
