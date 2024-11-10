@@ -15,7 +15,7 @@ import { Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, 
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
-
+import { toPng } from 'html-to-image';
 let id = 0;
 const getId = () => `node_${id++}`;
 
@@ -112,6 +112,7 @@ function FlowChartApp() {
       setEdges(loadedFlow.edges);
       alert(`Flowchart '${name}' loaded!`);
       setLoadMenuOpen(false); // Close the load menu after loading
+      setChartName(name);
     } else {
       alert('No saved flowchart found!');
     }
@@ -162,6 +163,7 @@ function FlowChartApp() {
   const handleNewChart = () => {
     setNodes([]);
     setEdges([]);
+    setChartName(''); // Clear chart name
     alert('New chart created successfully!');
     handleMenuClose();
   };
@@ -177,6 +179,22 @@ function FlowChartApp() {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+
+  function exportChartAsImage() {
+    toPng(document.querySelector('.react-flow__viewport'), {backgroundColor: '#ffffff',})
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        const fileName = chartName ? `${chartName}.png` : 'flowchart.png';
+        link.download = fileName;
+        link.click();
+      })
+      .catch((err) => {
+        console.error('Error exporting chart as image:', err);
+      });
+  }
+
   return (
     <div style={{ height: '100vh', position: 'relative' }}>
       {/* Menu Button */}
@@ -189,6 +207,7 @@ function FlowChartApp() {
         <MenuItem onClick={handleNewChart}>New Chart</MenuItem>
         <MenuItem onClick={() => { setLoadMenuOpen(true); handleMenuClose(); }}>Load</MenuItem>
         <MenuItem onClick={() => { setSaveMenuOpen(true); handleMenuClose(); }}>Save</MenuItem>
+        <MenuItem onClick={() => {exportChartAsImage(); handleMenuClose();}}>Export as Image</MenuItem>
         <MenuItem onClick={() => { handleExportJSON(); handleMenuClose(); }}>Export JSON</MenuItem>
       </Menu>
 
