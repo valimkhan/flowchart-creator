@@ -54,7 +54,7 @@ function FlowChartApp() {
     const newNode = {
       id: getId(),
       position: { x: 150, y: 150 },
-      data: { label: `${type}`, editable: true, onDelete: handleDeleteNode },
+      data: { label: `${type}`, editable: true, onDelete: handleDeleteNode, onLabelChange: updateNodeLabel},
       type,
     };
     setNodes((nds) => [...nds, newNode]);
@@ -66,6 +66,16 @@ function FlowChartApp() {
     setEdges((eds) => eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
   }, [setNodes, setEdges]);
 
+  const updateNodeLabel = useCallback((nodeId, newLabel) => {
+    setNodes((nds) => 
+      nds.map((node) => 
+        node.id === nodeId 
+          ? { ...node, data: { ...node.data, label: newLabel } }
+          : node
+      )
+    );
+  }, [setNodes]);
+  
   const onConnect = useCallback((params) => {
     let edgeLabel;
     if (params.sourceHandle === 'b-dec') edgeLabel = 'No';
