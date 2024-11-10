@@ -16,6 +16,7 @@ export function StartNode({ id, data }) {
 
   const handleLabelChange = (e) => {
     setLabel(e.target.value);
+    data.onLabelChange(id, e.target.value);
   };
 
   const handleClose = () => {
@@ -76,6 +77,7 @@ export function StopNode({ id, data }) {
 
   const handleLabelChange = (e) => {
     setLabel(e.target.value);
+    data.onLabelChange(id, e.target.value);
   };
 
   const handleClose = () => {
@@ -133,6 +135,7 @@ export function ProcessNode({ id, data }) {
 
   const handleLabelChange = (e) => {
     setLabel(e.target.value);
+    data.onLabelChange(id, e.target.value);
   };
 
   const handleClose = () => {
@@ -191,6 +194,7 @@ export function InputOutputNode({ id, data }) {
 
   const handleLabelChange = (e) => {
     setLabel(e.target.value);
+    data.onLabelChange(id, e.target.value);
   };
 
   const handleClose = () => {
@@ -249,6 +253,7 @@ export function DecisionNode({ id, data }) {
 
   const handleLabelChange = (e) => {
     setLabel(e.target.value);
+    data.onLabelChange(id, e.target.value);
   };
 
   const handleClose = () => {
