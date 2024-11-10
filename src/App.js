@@ -37,6 +37,7 @@ function FlowChartApp() {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [chartName, setChartName] = useState('');
   const [loadMenuOpen, setLoadMenuOpen] = useState(false);
+  const [saveMenuOpen, setSaveMenuOpen] = useState(false);
   const [availableCharts, setAvailableCharts] = useState([]);
 
   const nodeTypes = useMemo(() => ({
@@ -95,9 +96,12 @@ function FlowChartApp() {
     }
     const flow = { nodes, edges };
     localStorage.setItem(chartName, JSON.stringify(flow));
-    alert(`Flowchart '${chartName}' saved!`);
-    setChartName(''); // Clear chart name after saving
+
+    //setChartName(''); // Clear chart name after saving
     updateAvailableCharts(); // Update available charts list
+    setSaveMenuOpen(false);
+
+    alert(`Flowchart '${chartName}' saved successfully!`);
   };
 
   // Load the flowchart from local storage
@@ -110,6 +114,32 @@ function FlowChartApp() {
       setLoadMenuOpen(false); // Close the load menu after loading
     } else {
       alert('No saved flowchart found!');
+    }
+  };
+
+
+  const handleLoadFromFile = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const loadedFlow = JSON.parse(e.target.result);
+          if (loadedFlow.nodes && loadedFlow.edges) {
+            setNodes(loadedFlow.nodes);
+            setEdges(loadedFlow.edges);
+            alert("Flowchart loaded from file!");
+            setLoadMenuOpen(false); // Close the load menu after loading
+          } else {
+            alert("Invalid file format: JSON must contain nodes and edges.");
+          }
+        } catch (error) {
+          alert("Failed to load file: Invalid JSON format.");
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      alert("No file selected.");
     }
   };
 
@@ -132,7 +162,7 @@ function FlowChartApp() {
   const handleNewChart = () => {
     setNodes([]);
     setEdges([]);
-    alert('New chart created!');
+    alert('New chart created successfully!');
     handleMenuClose();
   };
   // Export the flowchart as JSON
@@ -146,7 +176,6 @@ function FlowChartApp() {
     a.download = 'flowchart.json';
     a.click();
     URL.revokeObjectURL(url);
-    alert('Flowchart exported as JSON!');
   };
   return (
     <div style={{ height: '100vh', position: 'relative' }}>
@@ -158,9 +187,9 @@ function FlowChartApp() {
       {/* Menu for options */}
       <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
         <MenuItem onClick={handleNewChart}>New Chart</MenuItem>
-        <MenuItem onClick={() => setLoadMenuOpen(true)}>Load</MenuItem>
-        <MenuItem onClick={handleSave}>Save</MenuItem>
-        <MenuItem onClick={handleExportJSON}>Export JSON</MenuItem>
+        <MenuItem onClick={() => { setLoadMenuOpen(true); handleMenuClose(); }}>Load</MenuItem>
+        <MenuItem onClick={() => { setSaveMenuOpen(true); handleMenuClose(); }}>Save</MenuItem>
+        <MenuItem onClick={() => { handleExportJSON(); handleMenuClose(); }}>Export JSON</MenuItem>
       </Menu>
 
       {/* Circular Add Node Button */}
@@ -216,13 +245,6 @@ function FlowChartApp() {
       <Dialog open={loadMenuOpen} onClose={() => setLoadMenuOpen(false)}>
         <DialogTitle>Load Chart</DialogTitle>
         <DialogContent>
-          <TextField
-            label="Chart Name"
-            value={chartName}
-            onChange={(e) => setChartName(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
           <div>
             <strong>Available Charts:</strong>
             <ul>
@@ -235,14 +257,68 @@ function FlowChartApp() {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleLoad} color="primary">
-            Load
-          </Button>
+          {/* <Button onClick={handleLoad} color="primary">
+            Load JSON
+          </Button> */}
+          <div>
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleLoadFromFile}
+              style={{
+                opacity: 0,             // Hide the actual file input
+                position: "absolute",    // Remove it from the flow of the document
+                width: 115,           // Full width for accessibility
+                height: 35,          // Full height for accessibility
+                zIndex: 1,               // Ensure it's on top to capture clicks
+              }}
+            />
+
+            <button style={{
+              padding: "8px 16px",
+              fontSize: "16px",
+              backgroundColor: "#007bff", // Button color
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              position: "relative",       // Ensures button and input align
+            }}>
+              Load JSON
+            </button>
+
+          </div>
+          {/* <input type="file" accept=".json" onChange={handleLoadFromFile} /> */}
           <Button onClick={() => setLoadMenuOpen(false)} color="secondary">
             Cancel
           </Button>
         </DialogActions>
       </Dialog>
+
+
+
+      {/* Save Chart Dialog */}
+      <Dialog open={saveMenuOpen} onClose={() => setSaveMenuOpen(false)}>
+        <DialogTitle>Save Chart</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Chart Name"
+            value={chartName}
+            onChange={(e) => setChartName(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSave} color="primary">
+            Save
+          </Button>
+          <Button onClick={() => setSaveMenuOpen(false)} color="secondary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+
 
       {/* React Flow component */}
       <div style={{ height: '100%', width: '100%' }}>
